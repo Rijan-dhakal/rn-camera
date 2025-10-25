@@ -14,7 +14,6 @@ import {
 } from "expo-camera";
 import { useEffect, useState, useRef } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
-import { SafeAreaView } from "react-native-safe-area-context";
 import path from "path";
 import * as FileSystem from "expo-file-system/legacy";
 
@@ -74,9 +73,7 @@ export default function CameraScreen() {
           style={{ height: "100%", flex: 1 }}
         />
         <View style={{ padding: 10 }}>
-          <SafeAreaView edges={["bottom"]}>
-            <Button title="Save" onPress={() => saveFile(picture.uri)} />
-          </SafeAreaView>
+          <Button title="Save" onPress={() => saveFile(picture.uri)} />
         </View>
         <MaterialIcons
           style={styles.close}
