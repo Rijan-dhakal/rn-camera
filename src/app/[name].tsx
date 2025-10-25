@@ -1,8 +1,12 @@
-import { Text, View } from "react-native";
-import { Link, Stack, useLocalSearchParams } from "expo-router";
+import { Image, View } from "react-native";
+import { Stack, useLocalSearchParams } from "expo-router";
+import * as FileSystem from "expo-file-system/legacy";
 
 export default function ImageScreen() {
   const { name } = useLocalSearchParams<{ name: string }>();
+
+  const fullUri = FileSystem.documentDirectory + "captures/" + name;
+
   return (
     <View
       style={{
@@ -11,11 +15,12 @@ export default function ImageScreen() {
         alignItems: "center",
       }}
     >
-      <Stack.Screen options={{ title: `Image: ${name}` }} />
-      <Text style={{ fontSize: 24, fontWeight: 600 }}>
-        Image Details for : {name}
-      </Text>
-      <Link href="/">Home</Link>
+      <Stack.Screen options={{ title: "Media" }} />
+
+      <Image
+        source={{ uri: fullUri }}
+        style={{ flex: 1, width: "100%", height: "100%" }}
+      />
     </View>
   );
 }

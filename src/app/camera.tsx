@@ -1,5 +1,11 @@
 import { router } from "expo-router";
-import { ActivityIndicator, Image, StyleSheet, View } from "react-native";
+import {
+  ActivityIndicator,
+  Image,
+  StyleSheet,
+  View,
+  Button,
+} from "react-native";
 import {
   CameraCapturedPicture,
   CameraType,
@@ -8,6 +14,9 @@ import {
 } from "expo-camera";
 import { useEffect, useState, useRef } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
+import path from "path";
+import * as FileSystem from "expo-file-system/legacy";
 
 export default function CameraScreen() {
   const [permission, requestPermission] = useCameraPermissions();
@@ -22,6 +31,24 @@ export default function CameraScreen() {
   const takePicture = async () => {
     const res = await camera.current?.takePictureAsync();
     setPicture(res);
+  };
+
+  const saveFile = async (uri: string) => {
+    const fileName = path.parse(uri).base;
+    const capturesDir = FileSystem.documentDirectory + "captures/";
+
+    const dirInfo = await FileSystem.getInfoAsync(capturesDir);
+    if (!dirInfo.exists) {
+      await FileSystem.makeDirectoryAsync(capturesDir, { intermediates: true });
+    }
+
+    await FileSystem.copyAsync({
+      from: uri,
+      to: capturesDir + fileName,
+    });
+
+    setPicture(undefined);
+    router.back();
   };
 
   useEffect(() => {
@@ -41,11 +68,16 @@ export default function CameraScreen() {
 
   if (picture) {
     return (
-      <View>
+      <View style={{ flex: 1 }}>
         <Image
           source={{ uri: picture.uri }}
-          style={{ height: "100%", width: "100%" }}
+          style={{ height: "100%", flex: 1 }}
         />
+        <View style={{ padding: 10 }}>
+          <SafeAreaView edges={["bottom"]}>
+            <Button title="Save" onPress={() => saveFile(picture.uri)} />
+          </SafeAreaView>
+        </View>
         <MaterialIcons
           style={styles.close}
           name="arrow-back"
@@ -110,7 +142,6 @@ const styles = StyleSheet.create({
   },
   footer: {
     padding: 30,
-    paddingBottom: 70,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
