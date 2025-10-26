@@ -7,7 +7,10 @@ export default function RootLayout() {
       <SafeAreaView edges={["bottom"]} style={{ flex: 1 }}>
         <Stack>
           <Stack.Screen name="index" options={{ title: "Gallery" }} />
-          <Stack.Screen name="camera" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="camera"
+            options={{ headerShown: false, statusBarHidden: true }}
+          />
         </Stack>
       </SafeAreaView>
     </SafeAreaProvider>

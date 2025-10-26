@@ -2,14 +2,26 @@ import { Alert, Image, StyleSheet, View } from "react-native";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import * as FileSystem from "expo-file-system/legacy";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useVideoPlayer, VideoView } from "expo-video";
+import { getMediaType } from "../utils/media";
 
 export default function ImageScreen() {
   const { name } = useLocalSearchParams<{ name: string }>();
 
   const fullUri = FileSystem.documentDirectory + "captures/" + name;
+  const imageOrVideo = getMediaType(name);
+
+  const player = useVideoPlayer(
+    imageOrVideo === "video" ? fullUri : "",
+    (player) => {
+      if (imageOrVideo === "video") {
+        player.play();
+      }
+    }
+  );
 
   const deleteImage = async () => {
-    Alert.alert("Delete Image", "Do you want to delete this image?", [
+    Alert.alert("Delete File", "Do you want to delete this file?", [
       {
         text: "Cancel",
         style: "cancel",
@@ -49,11 +61,18 @@ export default function ImageScreen() {
           ),
         }}
       />
-
-      <Image
-        source={{ uri: fullUri }}
-        style={{ flex: 1, width: "100%", height: "100%" }}
-      />
+      {imageOrVideo === "video" ? (
+        <VideoView
+          player={player}
+          style={{ flex: 1, width: "100%", height: "100%" }}
+          nativeControls={true}
+        />
+      ) : (
+        <Image
+          source={{ uri: fullUri }}
+          style={{ flex: 1, width: "100%", height: "100%" }}
+        />
+      )}
     </View>
   );
 }
