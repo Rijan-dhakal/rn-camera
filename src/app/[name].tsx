@@ -4,8 +4,13 @@ import * as FileSystem from "expo-file-system/legacy";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { getMediaType } from "../utils/media";
+import * as MediaLibrary from "expo-media-library";
 
 export default function ImageScreen() {
+  const [permission, requestPermission] = MediaLibrary.usePermissions({
+    writeOnly: true,
+  });
+
   const { name } = useLocalSearchParams<{ name: string }>();
 
   const fullUri = FileSystem.documentDirectory + "captures/" + name;
@@ -37,6 +42,15 @@ export default function ImageScreen() {
     ]);
   };
 
+  const saveImage = async () => {
+    if (permission?.status !== "granted") {
+      await requestPermission();
+    }
+
+    await MediaLibrary.createAssetAsync(fullUri);
+    Alert.alert("", "Saved Successfully");
+  };
+
   return (
     <View
       style={{
@@ -56,7 +70,12 @@ export default function ImageScreen() {
                 color="crimson"
                 onPress={deleteImage}
               />
-              <MaterialIcons name="save" size={26} color="black" />
+              <MaterialIcons
+                name="save"
+                size={26}
+                color="black"
+                onPress={saveImage}
+              />
             </View>
           ),
         }}

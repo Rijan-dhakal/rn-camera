@@ -4,7 +4,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useCallback, useState } from "react";
 import * as FileSystem from "expo-file-system/legacy";
 import { getMediaType, mediaType } from "../utils/media";
-import { useVideoPlayer, VideoView } from "expo-video";
+import { Text } from "react-native";
 
 type Media = {
   name: string;
@@ -13,13 +13,6 @@ type Media = {
 };
 
 const MediaItem = function ({ item }: { item: Media }) {
-  const player = useVideoPlayer(
-    item.type === "video" ? item.uri : "",
-    (player) => {
-      player.pause();
-    }
-  );
-
   return (
     <Link href={`/${item.name}`} asChild>
       <Pressable style={{ maxWidth: "33.33%", position: "relative" }}>
